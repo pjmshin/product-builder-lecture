@@ -36,7 +36,7 @@
             min-height: 100vh;
             margin: 0;
             transition: background-color 0.3s, color 0.3s;
-            overflow: hidden; /* 인증 전에는 스크롤 방지 */
+            overflow: hidden;
         }
 
         body.verified {
@@ -53,8 +53,8 @@
             max-width: 500px;
             width: 95%;
             transition: background-color 0.3s, box-shadow 0.3s;
-            filter: blur(5px); /* 인증 전에는 흐릿하게 */
-            pointer-events: none; /* 인증 전에는 클릭 방지 */
+            filter: blur(10px);
+            pointer-events: none;
         }
 
         body.verified .container {
@@ -69,11 +69,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
 
         .modal-content {
@@ -93,20 +94,38 @@
 
         .modal-content p {
             margin-bottom: 2rem;
-            line-height: 1.5;
+            line-height: 1.6;
             color: var(--text-color);
         }
 
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
         .auth-btn {
-            background-color: var(--primary-color);
-            color: white;
+            flex: 1;
             border: none;
-            padding: 12px 30px;
-            font-size: 1.1rem;
+            padding: 12px;
+            font-size: 1rem;
             border-radius: 10px;
             cursor: pointer;
-            width: 100%;
             font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn-yes {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-no {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .auth-btn:hover {
+            opacity: 0.9;
         }
 
         .theme-btn {
@@ -123,7 +142,6 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            box-shadow: none;
         }
 
         h1 {
@@ -148,7 +166,6 @@
             background: var(--set-bg);
             border-radius: 16px;
             border: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .ball {
@@ -180,23 +197,11 @@
             font-weight: 600;
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
-        }
-
-        .action-btn:hover {
-            background-color: #357abd;
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.4);
-        }
-
-        .action-btn:active {
-            transform: translateY(0) scale(0.98);
         }
 
         @media (max-width: 420px) {
             .ball { width: 34px; height: 34px; font-size: 0.9rem; }
-            .lotto-set { gap: 6px; padding: 10px; }
             .container { padding: 2rem 1rem; }
         }
     </style>
@@ -206,9 +211,12 @@
     <!-- 성인 인증 모달 -->
     <div id="auth-modal">
         <div class="modal-content">
-            <h2>성인 인증</h2>
-            <p>로또 번호 추출 서비스는 성인만 이용할 수 있습니다.<br>당신은 만 19세 이상입니까?</p>
-            <button class="auth-btn" onclick="verifyAdult()">네, 성인입니다</button>
+            <h2>🔞 성인 인증</h2>
+            <p>본 서비스는 사행성 방지를 위해<br><strong>만 19세 이상 성인</strong>만 이용 가능합니다.<br>본인은 성인입니까?</p>
+            <div class="btn-group">
+                <button class="auth-btn btn-yes" onclick="verifyAdult()">네, 성인입니다</button>
+                <button class="auth-btn btn-no" onclick="denyAdult()">아니오</button>
+            </div>
         </div>
     </div>
 
@@ -218,16 +226,11 @@
         </button>
         
         <h1>로또 번호 추출기</h1>
-        
-        <div id="lotto-display" class="lotto-container">
-            <!-- 번호 세트 생성 영역 -->
-        </div>
-        
+        <div id="lotto-display" class="lotto-container"></div>
         <button class="action-btn" onclick="renderLottoSets()">번호 추출하기</button>
     </div>
 
     <script>
-        // 성인 인증 확인 및 처리
         function checkVerification() {
             const isVerified = sessionStorage.getItem('adultVerified');
             if (isVerified === 'true') {
@@ -242,7 +245,11 @@
             document.getElementById('auth-modal').style.display = 'none';
         }
 
-        // 테마 토글 로직
+        function denyAdult() {
+            alert('죄송합니다. 미성년자는 본 서비스를 이용할 수 없습니다.');
+            window.location.href = 'https://www.google.com'; // 외부로 리다이렉트 (선택 사항)
+        }
+
         function toggleTheme() {
             const body = document.body;
             const themeIcon = document.getElementById('theme-icon');
@@ -261,16 +268,13 @@
             }
         }
 
-        // 초기 설정
         window.onload = function() {
             checkVerification();
-            
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('theme-icon').innerText = '☀️';
                 document.getElementById('theme-text').innerText = '라이트 모드';
             }
-            
             renderLottoSets();
         };
 
@@ -294,19 +298,16 @@
         function renderLottoSets() {
             const display = document.getElementById('lotto-display');
             display.innerHTML = '';
-
             for (let i = 0; i < 5; i++) {
                 const set = generateSingleSet();
                 const setDiv = document.createElement('div');
                 setDiv.className = 'lotto-set';
-
                 set.forEach(num => {
                     const ball = document.createElement('div');
                     ball.className = `ball ${getBallColorClass(num)}`;
                     ball.innerText = num;
                     setDiv.appendChild(ball);
                 });
-
                 display.appendChild(setDiv);
             }
         }
