@@ -6,10 +6,24 @@
     <title>로또 번호 추출기</title>
     <style>
         :root {
+            /* Light Mode */
             --primary-color: #4a90e2;
             --bg-color: #f5f7fa;
             --card-bg: #ffffff;
             --text-color: #333;
+            --set-bg: #f9f9f9;
+            --border-color: #eee;
+            --shadow: rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode {
+            /* Dark Mode */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --set-bg: #2a2a2a;
+            --border-color: #333;
+            --shadow: rgba(0,0,0,0.4);
         }
 
         body {
@@ -21,44 +35,66 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
+            position: relative;
             background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px var(--shadow);
             text-align: center;
             max-width: 500px;
             width: 95%;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .theme-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: none;
         }
 
         h1 {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             color: var(--primary-color);
             font-weight: 800;
+            margin-top: 0.5rem;
         }
 
         .lotto-container {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
 
         .lotto-set {
             display: flex;
             justify-content: center;
             gap: 8px;
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 12px;
-            border: 1px solid #eee;
+            padding: 14px;
+            background: var(--set-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .ball {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -66,62 +102,89 @@
             color: white;
             font-weight: bold;
             font-size: 1rem;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* 로또 번호대별 색상 */
-        .ball-10 { background: #fbc400; } /* 1-10: 노랑 */
-        .ball-20 { background: #69c8f2; } /* 11-20: 파랑 */
-        .ball-30 { background: #ff7272; } /* 21-30: 빨강 */
-        .ball-40 { background: #aaaaaa; } /* 31-40: 회색 */
-        .ball-50 { background: #b0d840; } /* 41-45: 초록 */
+        .ball-10 { background: linear-gradient(135deg, #fbc400, #f8a500); }
+        .ball-20 { background: linear-gradient(135deg, #69c8f2, #2a9cdb); }
+        .ball-30 { background: linear-gradient(135deg, #ff7272, #e63946); }
+        .ball-40 { background: linear-gradient(135deg, #aaaaaa, #777777); }
+        .ball-50 { background: linear-gradient(135deg, #b0d840, #7cb342); }
 
-        button {
+        .action-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 35px;
+            padding: 14px 40px;
             font-size: 1.1rem;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
         }
 
-        button:hover {
+        .action-btn:hover {
             background-color: #357abd;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.4);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.4);
         }
 
-        button:active {
-            transform: translateY(0);
+        .action-btn:active {
+            transform: translateY(0) scale(0.98);
         }
 
-        @media (max-width: 400px) {
-            .ball {
-                width: 32px;
-                height: 32px;
-                font-size: 0.9rem;
-            }
-            .lotto-set { gap: 5px; }
+        @media (max-width: 420px) {
+            .ball { width: 34px; height: 34px; font-size: 0.9rem; }
+            .lotto-set { gap: 6px; padding: 10px; }
+            .container { padding: 2rem 1rem; }
         }
     </style>
 </head>
-<body>
+<body class="light-mode">
 
     <div class="container">
+        <button class="theme-btn" onclick="toggleTheme()" id="theme-toggle">
+            <span id="theme-icon">🌙</span> <span id="theme-text">다크 모드</span>
+        </button>
+        
         <h1>로또 번호 추출기</h1>
+        
         <div id="lotto-display" class="lotto-container">
-            <!-- 번호 세트가 여기에 생성됩니다 -->
+            <!-- 번호 세트 생성 영역 -->
         </div>
-        <button onclick="renderLottoSets()">번호 추출하기</button>
+        
+        <button class="action-btn" onclick="renderLottoSets()">번호 추출하기</button>
     </div>
 
     <script>
-        // 번호에 따른 색상 클래스 반환
+        // 테마 토글 로직
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                themeIcon.innerText = '🌙';
+                themeText.innerText = '다크 모드';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                themeIcon.innerText = '☀️';
+                themeText.innerText = '라이트 모드';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 초기 테마 설정
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('theme-icon').innerText = '☀️';
+            document.getElementById('theme-text').innerText = '라이트 모드';
+        }
+
         function getBallColorClass(num) {
             if (num <= 10) return 'ball-10';
             if (num <= 20) return 'ball-20';
@@ -130,7 +193,6 @@
             return 'ball-50';
         }
 
-        // 1-45 중 중복 없는 6개 번호 생성 및 정렬
         function generateSingleSet() {
             const numbers = new Set();
             while (numbers.size < 6) {
@@ -140,10 +202,9 @@
             return Array.from(numbers).sort((a, b) => a - b);
         }
 
-        // 5세트의 번호를 화면에 렌더링
         function renderLottoSets() {
             const display = document.getElementById('lotto-display');
-            display.innerHTML = ''; // 기존 내용 삭제
+            display.innerHTML = '';
 
             for (let i = 0; i < 5; i++) {
                 const set = generateSingleSet();
@@ -161,7 +222,6 @@
             }
         }
 
-        // 페이지 로드 시 자동으로 첫 5세트 생성
         window.onload = renderLottoSets;
     </script>
 </body>
