@@ -36,6 +36,11 @@
             min-height: 100vh;
             margin: 0;
             transition: background-color 0.3s, color 0.3s;
+            overflow: hidden; /* 인증 전에는 스크롤 방지 */
+        }
+
+        body.verified {
+            overflow: auto;
         }
 
         .container {
@@ -48,6 +53,60 @@
             max-width: 500px;
             width: 95%;
             transition: background-color 0.3s, box-shadow 0.3s;
+            filter: blur(5px); /* 인증 전에는 흐릿하게 */
+            pointer-events: none; /* 인증 전에는 클릭 방지 */
+        }
+
+        body.verified .container {
+            filter: blur(0);
+            pointer-events: auto;
+        }
+
+        /* 성인 인증 모달 */
+        #auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .modal-content p {
+            margin-bottom: 2rem;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
+        .auth-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
         }
 
         .theme-btn {
@@ -144,6 +203,15 @@
 </head>
 <body class="light-mode">
 
+    <!-- 성인 인증 모달 -->
+    <div id="auth-modal">
+        <div class="modal-content">
+            <h2>성인 인증</h2>
+            <p>로또 번호 추출 서비스는 성인만 이용할 수 있습니다.<br>당신은 만 19세 이상입니까?</p>
+            <button class="auth-btn" onclick="verifyAdult()">네, 성인입니다</button>
+        </div>
+    </div>
+
     <div class="container">
         <button class="theme-btn" onclick="toggleTheme()" id="theme-toggle">
             <span id="theme-icon">🌙</span> <span id="theme-text">다크 모드</span>
@@ -159,6 +227,21 @@
     </div>
 
     <script>
+        // 성인 인증 확인 및 처리
+        function checkVerification() {
+            const isVerified = sessionStorage.getItem('adultVerified');
+            if (isVerified === 'true') {
+                document.body.classList.add('verified');
+                document.getElementById('auth-modal').style.display = 'none';
+            }
+        }
+
+        function verifyAdult() {
+            sessionStorage.setItem('adultVerified', 'true');
+            document.body.classList.add('verified');
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
         // 테마 토글 로직
         function toggleTheme() {
             const body = document.body;
@@ -178,12 +261,18 @@
             }
         }
 
-        // 초기 테마 설정
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('theme-icon').innerText = '☀️';
-            document.getElementById('theme-text').innerText = '라이트 모드';
-        }
+        // 초기 설정
+        window.onload = function() {
+            checkVerification();
+            
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-icon').innerText = '☀️';
+                document.getElementById('theme-text').innerText = '라이트 모드';
+            }
+            
+            renderLottoSets();
+        };
 
         function getBallColorClass(num) {
             if (num <= 10) return 'ball-10';
@@ -221,8 +310,6 @@
                 display.appendChild(setDiv);
             }
         }
-
-        window.onload = renderLottoSets;
     </script>
 </body>
 </html>
