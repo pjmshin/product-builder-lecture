@@ -1,21 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Number Generator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>로또 번호 추출기</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 95%;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+
+        .lotto-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .lotto-set {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        .ball {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* 로또 번호대별 색상 */
+        .ball-10 { background: #fbc400; } /* 1-10: 노랑 */
+        .ball-20 { background: #69c8f2; } /* 11-20: 파랑 */
+        .ball-30 { background: #ff7272; } /* 21-30: 빨강 */
+        .ball-40 { background: #aaaaaa; } /* 31-40: 회색 */
+        .ball-50 { background: #b0d840; } /* 41-45: 초록 */
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        button:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 400px) {
+            .ball {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            .lotto-set { gap: 5px; }
+        }
+    </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>Lotto Number Generator</h1>
-        <p class="subtitle">Generate your lucky numbers for the next big draw!</p>
-        <button id="generate">Generate Numbers</button>
-        <div id="numbers" class="number-container"></div>
+        <h1>로또 번호 추출기</h1>
+        <div id="lotto-display" class="lotto-container">
+            <!-- 번호 세트가 여기에 생성됩니다 -->
+        </div>
+        <button onclick="renderLottoSets()">번호 추출하기</button>
     </div>
-    <script src="main.js"></script>
+
+    <script>
+        // 번호에 따른 색상 클래스 반환
+        function getBallColorClass(num) {
+            if (num <= 10) return 'ball-10';
+            if (num <= 20) return 'ball-20';
+            if (num <= 30) return 'ball-30';
+            if (num <= 40) return 'ball-40';
+            return 'ball-50';
+        }
+
+        // 1-45 중 중복 없는 6개 번호 생성 및 정렬
+        function generateSingleSet() {
+            const numbers = new Set();
+            while (numbers.size < 6) {
+                const num = Math.floor(Math.random() * 45) + 1;
+                numbers.add(num);
+            }
+            return Array.from(numbers).sort((a, b) => a - b);
+        }
+
+        // 5세트의 번호를 화면에 렌더링
+        function renderLottoSets() {
+            const display = document.getElementById('lotto-display');
+            display.innerHTML = ''; // 기존 내용 삭제
+
+            for (let i = 0; i < 5; i++) {
+                const set = generateSingleSet();
+                const setDiv = document.createElement('div');
+                setDiv.className = 'lotto-set';
+
+                set.forEach(num => {
+                    const ball = document.createElement('div');
+                    ball.className = `ball ${getBallColorClass(num)}`;
+                    ball.innerText = num;
+                    setDiv.appendChild(ball);
+                });
+
+                display.appendChild(setDiv);
+            }
+        }
+
+        // 페이지 로드 시 자동으로 첫 5세트 생성
+        window.onload = renderLottoSets;
+    </script>
 </body>
 </html>
