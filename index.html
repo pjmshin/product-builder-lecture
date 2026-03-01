@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로또 번호 추출기</title>
+    <script>
+        // 최상단에서 인증 여부 즉시 확인
+        if (sessionStorage.getItem('adultVerified') !== 'true') {
+            window.location.href = 'auth.html';
+        }
+    </script>
     <style>
         :root {
             /* Light Mode */
@@ -36,11 +42,6 @@
             min-height: 100vh;
             margin: 0;
             transition: background-color 0.3s, color 0.3s;
-            overflow: hidden;
-        }
-
-        body.verified {
-            overflow: auto;
         }
 
         .container {
@@ -53,79 +54,6 @@
             max-width: 500px;
             width: 95%;
             transition: background-color 0.3s, box-shadow 0.3s;
-            filter: blur(10px);
-            pointer-events: none;
-        }
-
-        body.verified .container {
-            filter: blur(0);
-            pointer-events: auto;
-        }
-
-        /* 성인 인증 모달 */
-        #auth-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-
-        .modal-content h2 {
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-        }
-
-        .modal-content p {
-            margin-bottom: 2rem;
-            line-height: 1.6;
-            color: var(--text-color);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .auth-btn {
-            flex: 1;
-            border: none;
-            padding: 12px;
-            font-size: 1rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: opacity 0.2s;
-        }
-
-        .btn-yes {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-no {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .auth-btn:hover {
-            opacity: 0.9;
         }
 
         .theme-btn {
@@ -198,6 +126,12 @@
             border-radius: 12px;
             cursor: pointer;
             box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
         }
 
         @media (max-width: 420px) {
@@ -207,18 +141,6 @@
     </style>
 </head>
 <body class="light-mode">
-
-    <!-- 성인 인증 모달 -->
-    <div id="auth-modal">
-        <div class="modal-content">
-            <h2>🔞 성인 인증</h2>
-            <p>본 서비스는 사행성 방지를 위해<br><strong>만 19세 이상 성인</strong>만 이용 가능합니다.<br>본인은 성인입니까?</p>
-            <div class="btn-group">
-                <button class="auth-btn btn-yes" onclick="verifyAdult()">네, 성인입니다</button>
-                <button class="auth-btn btn-no" onclick="denyAdult()">아니오</button>
-            </div>
-        </div>
-    </div>
 
     <div class="container">
         <button class="theme-btn" onclick="toggleTheme()" id="theme-toggle">
@@ -231,25 +153,6 @@
     </div>
 
     <script>
-        function checkVerification() {
-            const isVerified = sessionStorage.getItem('adultVerified');
-            if (isVerified === 'true') {
-                document.body.classList.add('verified');
-                document.getElementById('auth-modal').style.display = 'none';
-            }
-        }
-
-        function verifyAdult() {
-            sessionStorage.setItem('adultVerified', 'true');
-            document.body.classList.add('verified');
-            document.getElementById('auth-modal').style.display = 'none';
-        }
-
-        function denyAdult() {
-            alert('죄송합니다. 미성년자는 본 서비스를 이용할 수 없습니다.');
-            window.location.href = 'https://www.google.com'; // 외부로 리다이렉트 (선택 사항)
-        }
-
         function toggleTheme() {
             const body = document.body;
             const themeIcon = document.getElementById('theme-icon');
@@ -269,7 +172,6 @@
         }
 
         window.onload = function() {
-            checkVerification();
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('theme-icon').innerText = '☀️';
