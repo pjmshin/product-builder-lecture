@@ -3,33 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로또 번호 추출기</title>
-    <script>
-        // 최상단에서 인증 여부 즉시 확인
-        if (sessionStorage.getItem('adultVerified') !== 'true') {
-            window.location.href = 'auth.html';
-        }
-    </script>
+    <title>메인 - 로또 번호 추출기</title>
     <style>
         :root {
-            /* Light Mode */
             --primary-color: #4a90e2;
             --bg-color: #f5f7fa;
             --card-bg: #ffffff;
             --text-color: #333;
-            --set-bg: #f9f9f9;
             --border-color: #eee;
-            --shadow: rgba(0,0,0,0.1);
         }
 
         body.dark-mode {
-            /* Dark Mode */
             --bg-color: #121212;
             --card-bg: #1e1e1e;
             --text-color: #e0e0e0;
-            --set-bg: #2a2a2a;
             --border-color: #333;
-            --shadow: rgba(0,0,0,0.4);
         }
 
         body {
@@ -44,174 +32,93 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        .container {
-            position: relative;
-            background-color: var(--card-bg);
-            padding: 2.5rem 2rem;
+        .auth-card {
+            background: var(--card-bg);
+            padding: 3rem 2rem;
             border-radius: 24px;
-            box-shadow: 0 10px 40px var(--shadow);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 500px;
-            width: 95%;
-            transition: background-color 0.3s, box-shadow 0.3s;
+            max-width: 400px;
+            width: 90%;
+            transition: background-color 0.3s;
         }
 
-        .theme-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 5px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        h1 {
-            margin-bottom: 2rem;
+        h2 {
+            margin-bottom: 1rem;
             color: var(--primary-color);
-            font-weight: 800;
-            margin-top: 0.5rem;
+            font-size: 2rem;
         }
 
-        .lotto-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        p {
             margin-bottom: 2.5rem;
+            line-height: 1.6;
+            color: var(--text-color);
         }
 
-        .lotto-set {
+        .btn-group {
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px;
-            background: var(--set-bg);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
+            gap: 12px;
         }
 
-        .ball {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        .ball-10 { background: linear-gradient(135deg, #fbc400, #f8a500); }
-        .ball-20 { background: linear-gradient(135deg, #69c8f2, #2a9cdb); }
-        .ball-30 { background: linear-gradient(135deg, #ff7272, #e63946); }
-        .ball-40 { background: linear-gradient(135deg, #aaaaaa, #777777); }
-        .ball-50 { background: linear-gradient(135deg, #b0d840, #7cb342); }
-
-        .action-btn {
-            background-color: var(--primary-color);
-            color: white;
+        .auth-btn {
+            flex: 1;
             border: none;
-            padding: 14px 40px;
+            padding: 15px;
             font-size: 1.1rem;
-            font-weight: 600;
             border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
-            transition: all 0.2s ease;
+            font-weight: 600;
+            transition: transform 0.2s, opacity 0.2s;
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
+        .btn-yes {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-no {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .auth-btn:hover {
             opacity: 0.9;
-        }
-
-        @media (max-width: 420px) {
-            .ball { width: 34px; height: 34px; font-size: 0.9rem; }
-            .container { padding: 2rem 1rem; }
+            transform: translateY(-2px);
         }
     </style>
 </head>
-<body class="light-mode">
+<body>
 
-    <div class="container">
-        <button class="theme-btn" onclick="toggleTheme()" id="theme-toggle">
-            <span id="theme-icon">🌙</span> <span id="theme-text">다크 모드</span>
-        </button>
+    <div class="auth-card">
+        <h2>🔞 성인 인증</h2>
+        <p>본 서비스는 성인 전용입니다.<br><strong>만 19세 이상</strong>이십니까?</p>
         
-        <h1>로또 번호 추출기</h1>
-        <div id="lotto-display" class="lotto-container"></div>
-        <button class="action-btn" onclick="renderLottoSets()">번호 추출하기</button>
+        <div class="btn-group">
+            <button class="auth-btn btn-yes" onclick="verifyAdult()">네, 맞습니다</button>
+            <button class="auth-btn btn-no" onclick="denyAdult()">아니오</button>
+        </div>
     </div>
 
     <script>
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('theme-icon');
-            const themeText = document.getElementById('theme-text');
-            
-            if (body.classList.contains('dark-mode')) {
-                body.classList.remove('dark-mode');
-                themeIcon.innerText = '🌙';
-                themeText.innerText = '다크 모드';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.add('dark-mode');
-                themeIcon.innerText = '☀️';
-                themeText.innerText = '라이트 모드';
-                localStorage.setItem('theme', 'dark');
-            }
+        // 이미 인증된 경우 바로 lotto.html로 이동
+        if (sessionStorage.getItem('adultVerified') === 'true') {
+            window.location.href = 'lotto.html';
         }
 
-        window.onload = function() {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('theme-icon').innerText = '☀️';
-                document.getElementById('theme-text').innerText = '라이트 모드';
-            }
-            renderLottoSets();
-        };
-
-        function getBallColorClass(num) {
-            if (num <= 10) return 'ball-10';
-            if (num <= 20) return 'ball-20';
-            if (num <= 30) return 'ball-30';
-            if (num <= 40) return 'ball-40';
-            return 'ball-50';
+        // 테마 설정
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
         }
 
-        function generateSingleSet() {
-            const numbers = new Set();
-            while (numbers.size < 6) {
-                const num = Math.floor(Math.random() * 45) + 1;
-                numbers.add(num);
-            }
-            return Array.from(numbers).sort((a, b) => a - b);
+        function verifyAdult() {
+            sessionStorage.setItem('adultVerified', 'true');
+            alert('인증되었습니다. 로또 번호 추출 페이지로 이동합니다.');
+            window.location.href = 'lotto.html';
         }
 
-        function renderLottoSets() {
-            const display = document.getElementById('lotto-display');
-            display.innerHTML = '';
-            for (let i = 0; i < 5; i++) {
-                const set = generateSingleSet();
-                const setDiv = document.createElement('div');
-                setDiv.className = 'lotto-set';
-                set.forEach(num => {
-                    const ball = document.createElement('div');
-                    ball.className = `ball ${getBallColorClass(num)}`;
-                    ball.innerText = num;
-                    setDiv.appendChild(ball);
-                });
-                display.appendChild(setDiv);
-            }
+        function denyAdult() {
+            alert('미성년자는 이용할 수 없습니다. 메인 페이지로 돌아갑니다.');
+            window.location.reload(); // 현재 페이지(메인) 다시 로드
         }
     </script>
 </body>
