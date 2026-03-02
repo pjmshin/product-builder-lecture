@@ -4,13 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로또 번호 추출기 - 결과</title>
-    <script>
-        // 인증 여부 즉시 확인 (미인증 시 index.html로 이동)
-        if (sessionStorage.getItem('adultVerified') !== 'true') {
-            alert('성인 인증이 필요합니다.');
-            window.location.href = 'index.html';
-        }
-    </script>
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -133,10 +126,6 @@
             transition: all 0.2s ease;
         }
 
-        .logout-btn {
-            background-color: #95a5a6;
-        }
-
         .action-btn:hover {
             transform: translateY(-2px);
             opacity: 0.9;
@@ -159,7 +148,6 @@
         
         <div class="btn-group">
             <button class="action-btn" onclick="renderLottoSets()">다시 추출하기</button>
-            <button class="action-btn logout-btn" onclick="logout()">로그아웃</button>
         </div>
     </div>
 
@@ -180,11 +168,6 @@
                 themeText.innerText = '라이트 모드';
                 localStorage.setItem('theme', 'dark');
             }
-        }
-
-        function logout() {
-            sessionStorage.removeItem('adultVerified');
-            window.location.href = 'index.html';
         }
 
         window.onload = function() {
