@@ -1,3 +1,4 @@
+
 # To learn more about how to use Nix to configure your environment
 # see: https://developers.google.com/idx/guides/customize-idx-env
 { pkgs, ... }: {
@@ -9,12 +10,16 @@
     pkgs.python3
   ];
   # Sets environment variables in the workspace
-  env = {};
+  env = {
+    LANG = "ko_KR.UTF-8";
+    LC_ALL = "ko_KR.UTF-8";
+  };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
       # "vscodevim.vim"
       "google.gemini-cli-vscode-ide-companion"
+      "MS-CEINTL.vscode-language-pack-ko"
     ];
     # Enable previews and customize configuration
     previews = {
